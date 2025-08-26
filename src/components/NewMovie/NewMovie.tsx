@@ -11,22 +11,30 @@ export const NewMovie: React.FC<Props> = ({ onAdd }) => {
   // to reset touched status of all the `Field`s
   const [count, setCount] = useState(0);
 
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [imgUrl, setImgUrl] = useState('');
+  const [imdbUrl, setImdbUrl] = useState('');
+  const [imdbId, setImdbId] = useState('');
+
   const [buttonDisabled, setButtonDisabled] = useState(true);
 
-  const disableButton = () => {
-    if (!title.trim() || !imgUrl.trim() || !imdbUrl.trim() || !imdbId.trim()) {
-      setButtonDisabled(true);
-      return;
-    }
-
-    setButtonDisabled(false);
-  };
+  const [validImg, setValidImg] = useState(true);
+  const [validImdb, setValidImdb] = useState(true);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    const pattern =
-      /^((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www\.|[-;:&=+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w-_]*)?\??(?:[-+=&;%@,.\w_]*)#?(?:[,.!/\\\w]*))?)$/;
+ const pattern = new RegExp(
+   '^(' +
+     // protocol
+     '(([A-Za-z]{3,9}:(?:\\/\\/)?)(?:[-;:&=+$,\\w]+@)?[A-Za-z0-9.-]+' +
+     // or www / email
+     '|(?:www\\.|[-;:&=+$,\\w]+@)[A-Za-z0-9.-]+)' +
+     // path, query, fragment
+     '((?:\\/[+~%/.\\w-_]*)?\\??(?:[-+=&;%@,.\\w_]*)#?(?:[,.!/\\\\\\w]*))?' +
+     ')$',
+ );
 
     if (!pattern.test(imgUrl)) {
       setValidImg(false);
@@ -54,9 +62,6 @@ export const NewMovie: React.FC<Props> = ({ onAdd }) => {
     setCount(count + 1);
   };
 
-  const [validImg, setValidImg] = useState(true);
-  const [validImdb, setValidImdb] = useState(true);
-
   const reset = () => {
     setTitle('');
     setDescription('');
@@ -65,14 +70,13 @@ export const NewMovie: React.FC<Props> = ({ onAdd }) => {
     setImdbId('');
   };
 
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [imgUrl, setImgUrl] = useState('');
-  const [imdbUrl, setImdbUrl] = useState('');
-  const [imdbId, setImdbId] = useState('');
-
   useEffect(() => {
-    disableButton();
+    if (!title.trim() || !imgUrl.trim() || !imdbUrl.trim() || !imdbId.trim()) {
+      setButtonDisabled(true);
+      return;
+    }
+
+    setButtonDisabled(false);
   }, [title, imgUrl, imdbUrl, imdbId]);
 
   return (
@@ -117,7 +121,7 @@ export const NewMovie: React.FC<Props> = ({ onAdd }) => {
           setImdbUrl(newValue);
         }}
         required
-        validImdbUrl = {validImdb}
+        validImdbUrl={validImdb}
       />
 
       <TextField
